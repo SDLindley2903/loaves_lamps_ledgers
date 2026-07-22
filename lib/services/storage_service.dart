@@ -8,6 +8,7 @@ class StorageService {
   static const _kLastChapterId = 'last_chapter_id';
   static const _kBookmarks = 'bookmarks';
   static const _kNotePrefix = 'note_';
+  static const _kStickers = 'kids_stickers';
 
   // Must be called before anything else
   static Future<void> init() async {
@@ -68,5 +69,18 @@ class StorageService {
 
   static Future<void> setNote(int chapterId, String note) async {
     await _p.setString('$_kNotePrefix$chapterId', note);
+  }
+
+  // Kids stickers (rewards earned in the kids games)
+  static Future<List<String>> getStickers() async {
+    return _p.getStringList(_kStickers) ?? <String>[];
+  }
+
+  static Future<void> addSticker(String id) async {
+    final list = _p.getStringList(_kStickers) ?? <String>[];
+    if (!list.contains(id)) {
+      list.add(id);
+      await _p.setStringList(_kStickers, list);
+    }
   }
 }
