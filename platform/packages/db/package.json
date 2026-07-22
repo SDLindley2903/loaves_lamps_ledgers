@@ -1,0 +1,17 @@
+{
+  "name": "@ft/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "PostgreSQL access bound to tenant scope (enforces RLS) + migration runner",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@ft/core": "workspace:*",
+    "@ft/tenancy": "workspace:*",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.10"
+  }
+}

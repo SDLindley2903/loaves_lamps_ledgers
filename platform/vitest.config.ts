@@ -6,11 +6,11 @@ export default defineConfig({
   test: {
     globals: false,
     environment: "node",
-    include: ["packages/**/*.test.ts"],
+    include: ["packages/**/*.test.ts", "products/**/*.test.ts"],
     coverage: {
       provider: "v8",
-      include: ["packages/*/src/**/*.ts"],
-      exclude: ["packages/*/src/**/index.ts"],
+      include: ["packages/*/src/**/*.ts", "products/*/src/**/*.ts"],
+      exclude: ["packages/*/src/**/index.ts", "products/*/src/**/index.ts"],
     },
   },
 });

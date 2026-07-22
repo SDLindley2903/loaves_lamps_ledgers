@@ -8,8 +8,10 @@
       "@ft/tenancy": ["packages/tenancy/src/index.ts"],
       "@ft/audit": ["packages/audit/src/index.ts"],
       "@ft/identity": ["packages/identity/src/index.ts"],
-      "@ft/api": ["packages/api/src/index.ts"]
+      "@ft/api": ["packages/api/src/index.ts"],
+      "@ft/db": ["packages/db/src/index.ts"],
+      "@ft/genesis": ["products/genesis/src/index.ts"]
     }
   },
-  "include": ["packages/*/src/**/*.ts", "vitest.config.ts"]
+  "include": ["packages/*/src/**/*.ts", "products/*/src/**/*.ts", "vitest.config.ts"]
 }

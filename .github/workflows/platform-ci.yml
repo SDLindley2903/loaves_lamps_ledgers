@@ -24,6 +24,21 @@ defaults:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    services:
+      # A throwaway Postgres so the Genesis integration tests exercise real Row-Level Security in CI
+      # (doc 04, doc 13) rather than skipping. The isolation invariant is proven end to end here.
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ft_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
 
@@ -46,5 +61,7 @@ jobs:
       - name: Typecheck (strict)
         run: pnpm typecheck
 
-      - name: Test (incl. tenant-isolation, authorization, and audit invariants)
+      - name: Test (incl. tenant-isolation, authorization, audit, and real-Postgres RLS invariants)
         run: pnpm test:coverage
+        env:
+          FT_TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/ft_test

@@ -19,6 +19,13 @@ built as a modular set of packages with hard boundaries (doc 01).
 | `@ft/audit` | Append-only, hash-chained, tamper-evident audit log + verification | 06 |
 | `@ft/identity` | Password hashing/policy, MFA (TOTP + recovery codes), access tokens, sessions | 02 |
 | `@ft/api` | The shared request kernel: authn → tenancy → authz → audit → handler, RFC 9457 errors, idempotency | 08, 01 |
+| `@ft/db` | PostgreSQL access bound to tenant scope (enforces RLS) + migration runner | 04, 07 |
+
+Products (`products/*`) are thin applications on top of the platform:
+
+| Product | Responsibility | Architecture doc |
+|---|---|---|
+| `@ft/genesis` | Congregation membership (first vertical): Postgres-backed members, RLS-enforced, on the shared kernel | 05, 08 |
 
 Dependency direction is one-way toward `core`. `identity` builds on `core`; `api` is the composition
 layer that wires `identity`, `authorization`, `tenancy`, and `audit` into one request pipeline. No
@@ -38,15 +45,29 @@ pnpm format         # prettier
 ## What the tests prove (the invariants, not just "it runs")
 
 - **Tenant isolation** — a caller scoped to Tenant A cannot read, list, or mutate Tenant B's data;
-  the attempt fails closed (`tenancy` tests).
+  the attempt fails closed (`tenancy` tests). Proven again **at the database level** against real
+  Postgres RLS in the Genesis integration test.
 - **Deny-by-default authorization** — an action with no matching grant is denied; role inheritance and
   ABAC scope conditions resolve correctly (`authorization` tests).
 - **Audit tamper-evidence** — any modification or deletion of a historical audit event breaks the hash
   chain and is detected by verification (`audit` tests).
+- **The whole pipeline together** — the `@ft/api` kernel test and the Genesis vertical drive a request
+  through authn → tenancy → authz → audit → handler and confirm 401/403/404 behavior, hard session
+  revocation, step-up MFA, audit-on-success/denial, and idempotent replay.
+
+## Running the database integration tests locally
+
+The Genesis Postgres tests skip unless `FT_TEST_DATABASE_URL` points at a throwaway Postgres the test
+may migrate:
+
+```bash
+FT_TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/ft_test pnpm test
+```
+
+CI provides a Postgres service and sets this automatically, so the RLS invariant is proven on every run.
 
 ## Not yet built (next increments)
 
-The data-layer RLS control is included as a migration (`packages/tenancy/sql/rls.sql`); a Postgres
-integration test that runs it against a real database, the transport adapter that mounts the kernel on
-NestJS/Fastify, the identity HTTP endpoints (login/MFA/refresh) on top of `@ft/identity`, and the first
-product module (a Genesis membership vertical) come in later increments.
+The transport adapter that mounts the kernel on a real HTTP server (NestJS/Fastify), the identity HTTP
+endpoints (login / MFA / refresh) on top of `@ft/identity`, tenant provisioning and the user/membership
+model (doc 05), and the Flutter client wiring come in later increments.

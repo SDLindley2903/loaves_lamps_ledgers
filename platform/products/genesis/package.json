@@ -1,0 +1,15 @@
+{
+  "name": "@ft/genesis",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Genesis: congregation membership management (first product vertical)",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@ft/api": "workspace:*",
+    "@ft/core": "workspace:*",
+    "@ft/db": "workspace:*",
+    "@ft/tenancy": "workspace:*"
+  }
+}
