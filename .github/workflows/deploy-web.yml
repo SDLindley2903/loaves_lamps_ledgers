@@ -45,7 +45,9 @@ jobs:
 
       - name: Build the website (this also compiles + checks the app)
         # base-href must match the repo name so links work on Pages.
-        run: flutter build web --release --base-href "/loaves_lamps_ledgers/"
+        # --pwa-strategy=none disables the offline service worker so browsers
+        # don't get stuck showing a cached old version after each update.
+        run: flutter build web --release --pwa-strategy=none --base-href "/loaves_lamps_ledgers/"
 
       - name: Package the website for Pages
         uses: actions/upload-pages-artifact@v3
