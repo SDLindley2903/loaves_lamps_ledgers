@@ -12,13 +12,16 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "format": "prettier --write \"packages/**/*.ts\"",
-    "format:check": "prettier --check \"packages/**/*.ts\""
+    "serve": "tsx packages/server/src/main.ts",
+    "serve:dev": "FT_DEV_AUTH=1 tsx packages/server/src/main.ts",
+    "format": "prettier --write \"packages/**/*.ts\" \"products/**/*.ts\"",
+    "format:check": "prettier --check \"packages/**/*.ts\" \"products/**/*.ts\""
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
     "@vitest/coverage-v8": "^2.1.8",
     "prettier": "^3.4.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^2.1.8"

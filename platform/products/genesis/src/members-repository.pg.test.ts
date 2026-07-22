@@ -60,12 +60,10 @@ describe.skipIf(!ADMIN_URL)("Genesis on PostgreSQL (RLS-enforced isolation)", ()
 
     // Seed two tenants and one member belonging to tenant B (admin insert; bypasses RLS for setup).
     await adminDb.withConnection(async (exec) => {
-      await exec.query("INSERT INTO tenants (id, name) VALUES ($1,$2),($3,$4) ON CONFLICT DO NOTHING", [
-        tenantA,
-        "First Church",
-        tenantB,
-        "Second Church",
-      ]);
+      await exec.query(
+        "INSERT INTO tenants (id, name) VALUES ($1,$2),($3,$4) ON CONFLICT DO NOTHING",
+        [tenantA, "First Church", tenantB, "Second Church"],
+      );
     });
 
     appDb = Database.fromUrl(appUrlFrom(ADMIN_URL!));

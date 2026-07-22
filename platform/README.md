@@ -20,6 +20,7 @@ built as a modular set of packages with hard boundaries (doc 01).
 | `@ft/identity` | Password hashing/policy, MFA (TOTP + recovery codes), access tokens, sessions | 02 |
 | `@ft/api` | The shared request kernel: authn → tenancy → authz → audit → handler, RFC 9457 errors, idempotency | 08, 01 |
 | `@ft/db` | PostgreSQL access bound to tenant scope (enforces RLS) + migration runner | 04, 07 |
+| `@ft/server` | HTTP transport adapter that mounts the kernel on a real web server; security headers; composition root | 01, 08, 11 |
 
 Products (`products/*`) are thin applications on top of the platform:
 
@@ -55,6 +56,34 @@ pnpm format         # prettier
   through authn → tenancy → authz → audit → handler and confirm 401/403/404 behavior, hard session
   revocation, step-up MFA, audit-on-success/denial, and idempotent replay.
 
+## Running the server
+
+In-memory mode (no database), with the DEV-only token endpoint enabled:
+
+```bash
+pnpm serve:dev            # listens on :8080; FT_DEV_AUTH=1
+# then:
+curl -s localhost:8080/health
+TOKEN=$(curl -s -X POST localhost:8080/dev/login -H 'content-type: application/json' \
+  -d '{"roles":["Genesis.Editor"]}' | sed -n 's/.*"accessToken":"\([^"]*\)".*/\1/p')
+curl -s -X POST localhost:8080/genesis/members -H "authorization: Bearer $TOKEN" \
+  -H 'content-type: application/json' -d '{"name":"Ada","email":"ada@example.org"}'
+curl -s localhost:8080/genesis/members -H "authorization: Bearer $TOKEN"
+```
+
+Postgres mode (RLS-enforced). `DATABASE_URL` must connect as a **non-bypass** role (`ft_app`); the
+admin URL runs migrations and provisions tenants:
+
+```bash
+DATABASE_URL=postgres://ft_app:ft_app_local_dev@127.0.0.1:5432/ft_test \
+FT_ADMIN_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/ft_test \
+FT_DEV_AUTH=1 FT_MIGRATE=1 pnpm serve
+```
+
+> The DEV token endpoint (`/dev/login`) exists only for local testing and is registered solely when
+> `FT_DEV_AUTH=1`. It is replaced by the real login/MFA flow in the next increment and must never be
+> enabled in production.
+
 ## Running the database integration tests locally
 
 The Genesis Postgres tests skip unless `FT_TEST_DATABASE_URL` points at a throwaway Postgres the test
@@ -68,6 +97,7 @@ CI provides a Postgres service and sets this automatically, so the RLS invariant
 
 ## Not yet built (next increments)
 
-The transport adapter that mounts the kernel on a real HTTP server (NestJS/Fastify), the identity HTTP
-endpoints (login / MFA / refresh) on top of `@ft/identity`, tenant provisioning and the user/membership
-model (doc 05), and the Flutter client wiring come in later increments.
+The real identity HTTP endpoints (login / MFA / refresh) that replace the DEV token endpoint, tenant
+provisioning and the user/membership model (doc 05), a Postgres-backed session store, and the Flutter
+client wiring come in later increments. The current server uses an in-memory session store and (in
+DB mode) a single admin connection for provisioning.

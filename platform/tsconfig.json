@@ -10,7 +10,8 @@
       "@ft/identity": ["packages/identity/src/index.ts"],
       "@ft/api": ["packages/api/src/index.ts"],
       "@ft/db": ["packages/db/src/index.ts"],
-      "@ft/genesis": ["products/genesis/src/index.ts"]
+      "@ft/genesis": ["products/genesis/src/index.ts"],
+      "@ft/server": ["packages/server/src/index.ts"]
     }
   },
   "include": ["packages/*/src/**/*.ts", "products/*/src/**/*.ts", "vitest.config.ts"]

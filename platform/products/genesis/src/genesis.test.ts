@@ -86,9 +86,7 @@ describe("Genesis membership vertical (in-memory)", () => {
   it("denies member creation to a viewer (403, deny-by-default)", async () => {
     const tenantId = uuidv7();
     const token = await h.login(tenantId, ["Genesis.Viewer"]);
-    const res = await h.kernel.handle(
-      req("POST", "/genesis/members", token, { name: "Miriam" }),
-    );
+    const res = await h.kernel.handle(req("POST", "/genesis/members", token, { name: "Miriam" }));
     expect(res.status).toBe(403);
   });
 

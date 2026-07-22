@@ -1,0 +1,19 @@
+{
+  "name": "@ft/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "HTTP transport adapter that mounts the platform kernel on a real web server",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@ft/api": "workspace:*",
+    "@ft/audit": "workspace:*",
+    "@ft/authorization": "workspace:*",
+    "@ft/core": "workspace:*",
+    "@ft/db": "workspace:*",
+    "@ft/genesis": "workspace:*",
+    "@ft/identity": "workspace:*",
+    "@ft/tenancy": "workspace:*"
+  }
+}
