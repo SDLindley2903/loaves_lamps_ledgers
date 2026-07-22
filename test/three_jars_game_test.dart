@@ -34,9 +34,9 @@ void main() {
     await _settle(tester);
 
     expect(find.text('How old are you? 🎂'), findsOneWidget);
-    expect(find.text('5–6'), findsOneWidget);
-    expect(find.text('7–8'), findsOneWidget);
-    expect(find.text('9–10'), findsOneWidget);
+    expect(find.text('4–6'), findsOneWidget);
+    expect(find.text('7–9'), findsOneWidget);
+    expect(find.text('10–11'), findsOneWidget);
   });
 
   testWidgets('World shows places once an age is chosen', (tester) async {

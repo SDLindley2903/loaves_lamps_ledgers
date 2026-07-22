@@ -20,11 +20,11 @@ extension AgeGroupInfo on AgeGroup {
   String get range {
     switch (this) {
       case AgeGroup.little:
-        return '5–6';
+        return '4–6';
       case AgeGroup.explorer:
-        return '7–8';
+        return '7–9';
       case AgeGroup.builder:
-        return '9–10';
+        return '10–11';
     }
   }
 
