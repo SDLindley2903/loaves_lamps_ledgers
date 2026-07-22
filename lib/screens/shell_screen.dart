@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'home_screen.dart';
 import 'daily_wisdom_screen.dart';
-import 'kids/kids_home_screen.dart';
+import 'kids/kids_world_screen.dart';
 
 class ShellScreen extends StatefulWidget {
   final bool darkMode;
@@ -29,7 +29,7 @@ class _ShellScreenState extends State<ShellScreen> {
         onDarkModeChanged: widget.onDarkModeChanged,
       ),
       const DailyWisdomScreen(),
-      const KidsHomeScreen(),
+      const KidsWorldScreen(),
     ];
 
     return Scaffold(
