@@ -1,0 +1,67 @@
+name: Build & Deploy Web (phone link)
+
+# Builds the Flutter app as a website and publishes it to GitHub Pages,
+# so it can be opened from any phone browser at:
+#   https://sdlindley2903.github.io/loaves_lamps_ledgers/
+#
+# Runs automatically when the kids branch or main changes, and can also be
+# started by hand from the Actions tab (Run workflow).
+
+on:
+  push:
+    branches:
+      - claude/kids-kindling-animations-5mqis9
+      - main
+  workflow_dispatch:
+
+# Permissions the job needs to publish to GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only let one deploy run at a time.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Turn on GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Download project pieces
+        run: flutter pub get
+
+      - name: Build the website
+        # base-href must match the repo name so links work on Pages.
+        run: flutter build web --release --base-href "/loaves_lamps_ledgers/"
+
+      - name: Package the website for Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish to the web
+        id: deployment
+        uses: actions/deploy-pages@v4
