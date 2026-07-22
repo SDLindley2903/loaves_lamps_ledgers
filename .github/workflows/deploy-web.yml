@@ -6,6 +6,11 @@ name: Build & Deploy Web (phone link)
 #
 # Runs automatically when the kids branch or main changes, and can also be
 # started by hand from the Actions tab (Run workflow).
+#
+# NOTE: GitHub Pages must be turned on once by the repo owner:
+#   Settings -> Pages -> Build and deployment -> Source -> "GitHub Actions".
+# The build (compile) step runs regardless; only the final publish step
+# needs Pages to be enabled.
 
 on:
   push:
@@ -14,13 +19,11 @@ on:
       - main
   workflow_dispatch:
 
-# Permissions the job needs to publish to GitHub Pages.
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Only let one deploy run at a time.
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -37,16 +40,10 @@ jobs:
         with:
           channel: stable
 
-      - name: Turn on GitHub Pages
-        id: pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
       - name: Download project pieces
         run: flutter pub get
 
-      - name: Build the website
+      - name: Build the website (this also compiles + checks the app)
         # base-href must match the repo name so links work on Pages.
         run: flutter build web --release --base-href "/loaves_lamps_ledgers/"
 
