@@ -1,0 +1,391 @@
+<style>
+  :root {
+    --bg: #FBF9F3;
+    --surface: #FFFFFF;
+    --surface-2: #F5F1E6;
+    --ink: #23201A;
+    --muted: #6C6558;
+    --line: #E6DFCF;
+    --teal: #1E5B50;
+    --teal-soft: #2C7A6C;
+    --amber: #C9791E;
+    --gold: #A9791C;
+    --link: #1E5B50;
+    --glow: rgba(217,138,43,0.16);
+    --shadow: 0 1px 2px rgba(35,32,26,.05), 0 8px 24px rgba(35,32,26,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16130E;
+      --surface: #201C15;
+      --surface-2: #262117;
+      --ink: #F1EBDC;
+      --muted: #A79D8B;
+      --line: #342D21;
+      --teal: #56B7A5;
+      --teal-soft: #4FB3A1;
+      --amber: #F0A94E;
+      --gold: #DFB25B;
+      --link: #6FC7B7;
+      --glow: rgba(240,169,78,0.12);
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #FBF9F3; --surface: #FFFFFF; --surface-2: #F5F1E6; --ink: #23201A;
+    --muted: #6C6558; --line: #E6DFCF; --teal: #1E5B50; --teal-soft: #2C7A6C;
+    --amber: #C9791E; --gold: #A9791C; --link: #1E5B50; --glow: rgba(217,138,43,0.16);
+    --shadow: 0 1px 2px rgba(35,32,26,.05), 0 8px 24px rgba(35,32,26,.06);
+  }
+  :root[data-theme="dark"] {
+    --bg: #16130E; --surface: #201C15; --surface-2: #262117; --ink: #F1EBDC;
+    --muted: #A79D8B; --line: #342D21; --teal: #56B7A5; --teal-soft: #4FB3A1;
+    --amber: #F0A94E; --gold: #DFB25B; --link: #6FC7B7; --glow: rgba(240,169,78,0.12);
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .serif { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; }
+  .mono { font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace; }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 22px; }
+
+  /* ---- Hero ---- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+    background:
+      radial-gradient(120% 80% at 78% -10%, var(--glow), transparent 60%),
+      radial-gradient(90% 70% at 12% 110%, var(--glow), transparent 55%);
+  }
+  .hero-inner { padding: 68px 0 52px; }
+  .eyebrow {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--amber); font-weight: 600; margin: 0 0 18px;
+  }
+  h1 {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(2.3rem, 6.2vw, 3.5rem);
+    line-height: 1.05; letter-spacing: -0.01em;
+    text-wrap: balance; margin: 0 0 18px; color: var(--ink);
+  }
+  h1 em { font-style: italic; color: var(--teal); }
+  .lede {
+    font-size: 1.18rem; color: var(--muted); max-width: 60ch; margin: 0;
+    text-wrap: pretty;
+  }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 30px;
+    font-size: .82rem; color: var(--muted);
+  }
+  .meta b { color: var(--ink); font-weight: 600; }
+
+  /* ---- Pillars ---- */
+  .pillars {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    margin-top: 40px;
+  }
+  .pillar {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px 18px; box-shadow: var(--shadow);
+    border-top: 3px solid var(--c);
+  }
+  .pillar .sym { font-size: 1.7rem; line-height: 1; }
+  .pillar h3 {
+    font-family: "Iowan Old Style", Palatino, Georgia, serif;
+    margin: 12px 0 2px; font-size: 1.18rem; color: var(--c);
+  }
+  .pillar .grown { font-size: .78rem; color: var(--muted); margin: 0 0 8px; text-transform: uppercase; letter-spacing: .04em; }
+  .pillar p.kid { margin: 0; font-size: .95rem; }
+  .pillar p.kid::before { content: "“"; color: var(--c); font-weight: 700; }
+  .pillar p.kid::after { content: "”"; color: var(--c); font-weight: 700; }
+
+  /* ---- Sections ---- */
+  section { padding: 46px 0; border-bottom: 1px solid var(--line); }
+  .sec-label {
+    font-family: ui-monospace, Menlo, monospace; font-size: .72rem;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--teal-soft);
+    font-weight: 600; margin: 0 0 10px;
+  }
+  h2 {
+    font-family: "Iowan Old Style", Palatino, Georgia, serif;
+    font-size: clamp(1.5rem, 3.6vw, 2rem); line-height: 1.15;
+    margin: 0 0 8px; letter-spacing: -0.01em; text-wrap: balance;
+  }
+  .sec-sub { color: var(--muted); margin: 0 0 26px; max-width: 62ch; }
+  p { text-wrap: pretty; }
+  a { color: var(--link); text-decoration-color: color-mix(in srgb, var(--link) 40%, transparent); text-underline-offset: 2px; }
+  a:hover { text-decoration-color: var(--link); }
+
+  /* ---- Feature list ---- */
+  .feat { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  .feat li {
+    display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .feat .ic { font-size: 1.25rem; line-height: 1.4; }
+  .feat b { display: block; }
+  .feat span { color: var(--muted); font-size: .93rem; }
+
+  /* ---- Tables ---- */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 460px; }
+  th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th { background: var(--surface-2); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr { background: var(--surface); }
+  td b { color: var(--ink); }
+  .tag { display: inline-block; font-family: ui-monospace, Menlo, monospace; font-size: .68rem; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  .tag.free { color: var(--teal); border-color: color-mix(in srgb, var(--teal) 40%, var(--line)); }
+
+  /* ---- Roadmap timeline ---- */
+  .road { display: grid; gap: 0; margin-top: 8px; }
+  .phase {
+    position: relative; padding: 0 0 30px 46px; border-left: 2px solid var(--line);
+  }
+  .phase:last-child { border-left-color: transparent; padding-bottom: 0; }
+  .phase .dot {
+    position: absolute; left: -13px; top: 0; width: 26px; height: 26px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 1rem;
+    background: var(--surface); border: 2px solid var(--c, var(--teal));
+  }
+  .phase .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .phase h3 { font-family: "Iowan Old Style", Palatino, Georgia, serif; font-size: 1.22rem; margin: 0; color: var(--ink); }
+  .phase .when { font-family: ui-monospace, Menlo, monospace; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--c, var(--teal)); font-weight: 600; }
+  .phase .goal { color: var(--muted); margin: 0 0 10px; font-size: .95rem; }
+  .phase ul { margin: 0; padding-left: 18px; }
+  .phase li { margin: 3px 0; font-size: .93rem; }
+  .phase li::marker { color: var(--c, var(--teal)); }
+  .now-badge { display: inline-block; background: var(--amber); color: #fff; font-family: ui-monospace, Menlo, monospace; font-size: .64rem; font-weight: 700; letter-spacing: .1em; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; }
+  :root[data-theme="dark"] .now-badge, .now-badge { color: #1b160e; }
+
+  /* ---- Callout / decision ---- */
+  .callout {
+    background: var(--surface); border: 1px solid var(--line);
+    border-left: 4px solid var(--amber); border-radius: 12px;
+    padding: 20px 22px; box-shadow: var(--shadow);
+  }
+  .callout h2 { margin-top: 0; }
+  .ask { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 10px; counter-reset: ask; }
+  .ask li { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; }
+  .ask li::before {
+    counter-increment: ask; content: counter(ask);
+    font-family: ui-monospace, Menlo, monospace; font-weight: 700; font-size: .8rem;
+    background: var(--teal); color: var(--bg); width: 22px; height: 22px; border-radius: 50%;
+    display: grid; place-items: center; margin-top: 2px;
+  }
+
+  .names { display: flex; flex-wrap: wrap; gap: 8px; }
+  .name-chip { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; font-family: "Iowan Old Style", Palatino, Georgia, serif; font-size: .98rem; }
+  .name-chip small { display: block; font-family: -apple-system, system-ui, sans-serif; font-size: .68rem; color: var(--muted); }
+
+  footer { padding: 34px 0 60px; color: var(--muted); font-size: .84rem; }
+
+  @media (max-width: 620px) {
+    .pillars { grid-template-columns: 1fr; }
+    .hero-inner { padding: 52px 0 40px; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal { animation: up .6s cubic-bezier(.2,.7,.2,1) both; }
+    @keyframes up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  }
+</style>
+
+<header class="hero">
+  <div class="wrap hero-inner reveal">
+    <p class="eyebrow">Product Requirements · Draft v1</p>
+    <h1 class="serif">A kids' app that teaches money the way <em>Loaves, Lamps &amp; Ledgers</em> does</h1>
+    <p class="lede">Same three lessons from your book — work, watch, and steward — retold for ages 5–10 with animated characters, read-aloud, and tap-to-play mini-games. Built on the app we already have, so we can ship a real first taste <b>today</b>.</p>
+    <div class="meta">
+      <span>Owner: <b>Shandy Lindley</b></span>
+      <span>Date: <b>Jul 22, 2026</b></span>
+      <span>Name: <b>TBD (new brand)</b></span>
+      <span>Built on: <b>the existing Flutter reader</b></span>
+    </div>
+
+    <div class="pillars">
+      <div class="pillar" style="--c: var(--gold)">
+        <div class="sym">🍞</div>
+        <h3 class="serif">Loaves</h3>
+        <p class="grown">Work &amp; diligence</p>
+        <p class="kid">We work, and work is good.</p>
+      </div>
+      <div class="pillar" style="--c: var(--amber)">
+        <div class="sym">🪔</div>
+        <h3 class="serif">Lamps</h3>
+        <p class="grown">See where money goes</p>
+        <p class="kid">Light shows us where it went.</p>
+      </div>
+      <div class="pillar" style="--c: var(--teal)">
+        <div class="sym">📒</div>
+        <h3 class="serif">Ledgers</h3>
+        <p class="grown">Faithful stewardship</p>
+        <p class="kid">We take care of what we're given.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="wrap">
+    <p class="sec-label">What we're building</p>
+    <h2 class="serif">A companion, not a clone</h2>
+    <p class="sec-sub">The grown-up reader stays exactly as it is. This is a new, brightly-colored experience for children — with its own new name — that turns your three big ideas into things kids can watch, hear, and play.</p>
+    <ul class="feat">
+      <li><span class="ic">🗺️</span><div><b>A friendly "world" screen</b><span>Three places to visit — the Bakery, the Lamp, and the Treasure Chest — one per big idea.</span></div></li>
+      <li><span class="ic">🐭</span><div><b>An animated guide character</b><span>A mascot that talks, cheers, and explains — so no reading is required.</span></div></li>
+      <li><span class="ic">🔊</span><div><b>Read-aloud everywhere</b><span>Tap any words and the app speaks them, using the device's built-in voice.</span></div></li>
+      <li><span class="ic">🎮</span><div><b>Three mini-games</b><span>Bread Line (work), Light the Path (tracking), and The Three Jars — Give / Save / Spend.</span></div></li>
+      <li><span class="ic">⭐</span><div><b>Sticker rewards</b><span>Finish a story or game, earn a sticker for the sticker book.</span></div></li>
+      <li><span class="ic">🔒</span><div><b>A calm Parent Zone</b><span>PIN-gated notes and settings, so parents and teachers trust it.</span></div></li>
+    </ul>
+  </section>
+
+  <section class="wrap">
+    <p class="sec-label">Research · buy or borrow before we build</p>
+    <h2 class="serif">What we can reuse</h2>
+    <p class="sec-sub">The biggest win: your current app already loads content from simple files, saves progress on the device, and runs on phones, web, and desktop. We add a "Kids Mode" onto a working foundation. For the new parts, everything below is Flutter-native and mostly free.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tool</th><th>What it gives us</th><th>Cost</th><th>Used for</th></tr></thead>
+        <tbody>
+          <tr><td><b>Your existing app</b></td><td>Content loading, local progress saving, cross-platform builds</td><td><span class="tag free">already ours</span></td><td>The whole foundation</td></tr>
+          <tr><td><b>Flame engine</b></td><td>A 2D game engine for Flutter (taps, sprites, game loop)</td><td><span class="tag free">open source</span></td><td>The mini-games</td></tr>
+          <tr><td><b>Rive</b></td><td>Interactive animated characters that react (Duolingo uses it)</td><td><span class="tag free">free runtime</span></td><td>The talking mascot</td></tr>
+          <tr><td><b>Lottie</b></td><td>Plays ready-made animations — confetti, sparkles</td><td><span class="tag free">open source</span></td><td>Celebrations &amp; stickers</td></tr>
+          <tr><td><b>flutter_tts</b></td><td>Read-aloud with the device's own voice — offline, free</td><td><span class="tag free">open source</span></td><td>Narration</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <p class="sec-label">The frameworks you chose</p>
+    <h2 class="serif">Kitchen procedures, not ingredients</h2>
+    <p class="sec-sub">These four don't ship inside the app — they make the <em>building</em> more careful and fast, like giving a kitchen a checklist, a head chef, and a review line before food goes out.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Framework</th><th>What it is</th><th>How we use it</th></tr></thead>
+        <tbody>
+          <tr><td><b>superpowers</b></td><td>A discipline for coding agents: brainstorm → spec → plan → test → review</td><td>Our default build habit</td></tr>
+          <tr><td><b>get-shit-done</b></td><td>Lightweight spec-driven development <span class="tag">now: gsd-core</span></td><td>Turn each phase into a crisp spec</td></tr>
+          <tr><td><b>metaswarm</b></td><td>Many specialist agents + quality gates + required tests</td><td>Heavier phases (backend, security)</td></tr>
+          <tr><td><b>claude-agents-library</b></td><td>34 ready-made expert "personas"</td><td>Pull in a Mobile Builder, a "Whimsy Injector," an API Tester</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <p class="sec-label">The plan · growing a restaurant</p>
+    <h2 class="serif">Roadmap in phases</h2>
+    <p class="sec-sub">We start as a food stand — something real and playable today — then grow into a restaurant with one employee, then a full front-of-house and back-of-house. We never throw away what works.</p>
+    <div class="road">
+      <div class="phase" style="--c: var(--amber)">
+        <div class="dot">🥪</div>
+        <div class="head"><h3 class="serif">The Food Stand</h3><span class="now-badge">Today</span></div>
+        <p class="goal">Something real, cute, and playable today — in the browser and on a phone. Offline. No cost.</p>
+        <ul>
+          <li>A new "Kids" section with an animated welcome and read-aloud</li>
+          <li><b>One playable game: The Three Jars</b> — sort coins into Give / Save / Spend, fill the jar, earn a sticker</li>
+          <li>Progress saved on the device using what we already have</li>
+          <li>Smoke test (does it load?) + a functional test of the game</li>
+        </ul>
+      </div>
+      <div class="phase" style="--c: var(--gold)">
+        <div class="dot">👤</div>
+        <div class="head"><h3 class="serif">Restaurant, one employee</h3><span class="when">Phase 1</span></div>
+        <p class="goal">It feels like a real little product.</p>
+        <ul>
+          <li>All three mini-games, plus a Rive talking mascot with reactions</li>
+          <li>Sticker book, sound effects, gentle music</li>
+          <li>PIN-gated Parent Zone with a one-line lesson per game</li>
+          <li>Kid-level retellings authored from a few of your chapters</li>
+        </ul>
+      </div>
+      <div class="phase" style="--c: var(--teal)">
+        <div class="dot">🍽️</div>
+        <div class="head"><h3 class="serif">Full front &amp; back of house</h3><span class="when">Phase 2</span></div>
+        <p class="goal">Accounts, sync, and content you control without shipping a new app.</p>
+        <ul>
+          <li>Backend on <b>Railway + Postgres</b> — parent accounts, multiple child profiles</li>
+          <li>Progress that syncs across devices</li>
+          <li><b>Cloudflare R2</b> for animation, audio, and sticker files</li>
+          <li>Integration tests, a QA gate, and a Security gate (kids' data = extra care)</li>
+        </ul>
+      </div>
+      <div class="phase" style="--c: var(--teal-soft)">
+        <div class="dot">🚀</div>
+        <div class="head"><h3 class="serif">Growth</h3><span class="when">Phase 3</span></div>
+        <p class="goal">More to come back for.</p>
+        <ul>
+          <li>New content packs, weekly challenges, printable coloring pages</li>
+          <li>Privacy-safe analytics to see which lessons land</li>
+          <li>Possible app-store release once polished</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <p class="sec-label">Quality · light to heavy</p>
+    <h2 class="serif">How we test</h2>
+    <p class="sec-sub">Each gate is a bigger safety check than the last. We use Playwright (with the CRX Chrome extension) against the app's web build, plus Pytest for any backend later.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Gate</th><th>Question it answers</th><th>When</th></tr></thead>
+        <tbody>
+          <tr><td><b>1 · Smoke</b></td><td>Does the page load with no errors?</td><td>Every phase</td></tr>
+          <tr><td><b>2 · Functional</b></td><td>Does the feature work (with fakes)?</td><td>Every game</td></tr>
+          <tr><td><b>3 · Integration</b></td><td>Does it work against real servers?</td><td>Phase 2+</td></tr>
+          <tr><td><b>4 · QA gate</b></td><td>Quality, errors, database, speed</td><td>Before releases</td></tr>
+          <tr><td><b>5 · Security gate</b></td><td>Input, login, data protection</td><td>Before any accounts</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <p class="sec-label">Still open</p>
+    <h2 class="serif">The name (decide later)</h2>
+    <p class="sec-sub">A brand-new name, separate from the book. Nothing here blocks building — we can ship under a placeholder. A few to react to when you're ready:</p>
+    <div class="names">
+      <span class="name-chip">Little Lamps<small>warm, gentle, easy to say</small></span>
+      <span class="name-chip">Coin Quest<small>adventurous, game-y</small></span>
+      <span class="name-chip">The Three Jars<small>explains itself</small></span>
+      <span class="name-chip">Bright Coins<small>cheerful, ownable</small></span>
+      <span class="name-chip">Kindling Kids<small>a spark that grows</small></span>
+      <span class="name-chip">Loaf &amp; Lamp<small>storybook feel</small></span>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="callout">
+      <p class="sec-label">Your move</p>
+      <h2 class="serif">What I need from you</h2>
+      <p style="color:var(--muted); margin:0;">Only the first one matters today. The rest are for later.</p>
+      <ul class="ask">
+        <li><div><b>Say "go" on the Food Stand.</b> I'll build <b>The Three Jars</b> mini-game today so you have something to tap through this evening.</div></li>
+        <li><div>Later: pick a name (or give me a vibe and I'll make more).</div></li>
+        <li><div>Later: confirm the jar labels — <b>Give / Save / Spend</b> — match your teaching.</div></li>
+        <li><div>At Phase 2: I'll walk you through making a Railway account, step by step.</div></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p>Loaves, Lamps &amp; Ledgers — Kids Companion · PRD Draft v1 · This page is the readable version; the full written spec lives in <span class="mono">docs/PRD.md</span> in the repo.</p>
+</footer>
