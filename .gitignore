@@ -24,3 +24,12 @@ ios/Flutter/Flutter.podspec
 windows/flutter/ephemeral/
 linux/flutter/ephemeral/
 macos/Flutter/ephemeral/
+
+# Node / platform backend
+node_modules/
+platform/**/dist/
+platform/**/coverage/
+platform/**/*.tsbuildinfo
+.env
+.env.*
+!.env.example

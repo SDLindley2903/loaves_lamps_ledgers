@@ -1,0 +1,26 @@
+{
+  "name": "@ft/platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Faith Trail Systems shared enterprise platform backend (monorepo root)",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "format": "prettier --write \"packages/**/*.ts\"",
+    "format:check": "prettier --check \"packages/**/*.ts\""
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^2.1.8",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^2.1.8"
+  }
+}

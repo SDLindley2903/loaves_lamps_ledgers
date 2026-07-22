@@ -1,0 +1,12 @@
+{
+  "name": "@ft/audit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Immutable, hash-chained, tamper-evident audit log",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@ft/core": "workspace:*"
+  }
+}

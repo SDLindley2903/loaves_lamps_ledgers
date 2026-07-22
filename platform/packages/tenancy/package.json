@@ -1,0 +1,12 @@
+{
+  "name": "@ft/tenancy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tenant context, tenant-scoped data access, and the cross-tenant guard",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@ft/core": "workspace:*"
+  }
+}

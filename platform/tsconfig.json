@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@ft/core": ["packages/core/src/index.ts"],
+      "@ft/authorization": ["packages/authorization/src/index.ts"],
+      "@ft/tenancy": ["packages/tenancy/src/index.ts"],
+      "@ft/audit": ["packages/audit/src/index.ts"]
+    }
+  },
+  "include": ["packages/*/src/**/*.ts", "vitest.config.ts"]
+}

@@ -1,0 +1,50 @@
+# CI for the shared platform backend (docs/architecture/13-cicd-pipeline.md).
+#
+# WHY these gates block merges: the platform's core promises — tenant isolation (doc 04),
+# deny-by-default authorization (doc 03), and immutable/tamper-evident audit (doc 06) — are only real
+# if they cannot silently regress. The test job runs the invariant suites; a change that breaks
+# isolation, authorization, or audit fails here and cannot merge.
+name: platform-ci
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "platform/**"
+      - ".github/workflows/platform-ci.yml"
+  pull_request:
+    paths:
+      - "platform/**"
+      - ".github/workflows/platform-ci.yml"
+
+defaults:
+  run:
+    working-directory: platform
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: platform/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Typecheck (strict)
+        run: pnpm typecheck
+
+      - name: Test (incl. tenant-isolation, authorization, and audit invariants)
+        run: pnpm test:coverage

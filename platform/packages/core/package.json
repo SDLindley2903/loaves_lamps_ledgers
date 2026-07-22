@@ -1,0 +1,9 @@
+{
+  "name": "@ft/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Platform core: security context, typed errors, IDs, data classification",
+  "main": "src/index.ts",
+  "types": "src/index.ts"
+}
