@@ -9,6 +9,7 @@ class StorageService {
   static const _kBookmarks = 'bookmarks';
   static const _kNotePrefix = 'note_';
   static const _kStickers = 'kids_stickers';
+  static const _kAgeGroup = 'kids_age_group';
 
   // Must be called before anything else
   static Future<void> init() async {
@@ -82,5 +83,14 @@ class StorageService {
       list.add(id);
       await _p.setStringList(_kStickers, list);
     }
+  }
+
+  // Kids age band (5-6 / 7-8 / 9-10)
+  static Future<String?> getAgeGroupId() async {
+    return _p.getString(_kAgeGroup);
+  }
+
+  static Future<void> setAgeGroupId(String id) async {
+    await _p.setString(_kAgeGroup, id);
   }
 }

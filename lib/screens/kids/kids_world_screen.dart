@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../services/storage_service.dart';
+import 'age_group.dart';
 import 'kids_art.dart';
+import 'story_time_screen.dart';
 import 'three_jars_game.dart';
 
-/// The animated kids' world: a bright cartoon map where a kid explorer
-/// visits three places (Treasure Room, Bakery, Lamp Market).
+/// The animated kids' world. First it asks the child's age band, then shows
+/// a bright cartoon map where a kid explorer visits places (Treasure Room,
+/// Story Time, and more coming soon). Content adapts to the chosen age.
 class KidsWorldScreen extends StatefulWidget {
   const KidsWorldScreen({super.key});
 
@@ -14,95 +17,262 @@ class KidsWorldScreen extends StatefulWidget {
 }
 
 class _KidsWorldScreenState extends State<KidsWorldScreen> {
+  bool _loading = true;
+  AgeGroup? _age;
   int _stickers = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadStickers();
+    _load();
   }
 
-  Future<void> _loadStickers() async {
-    final list = await StorageService.getStickers();
+  Future<void> _load() async {
+    final id = await StorageService.getAgeGroupId();
+    final stickers = await StorageService.getStickers();
     if (!mounted) return;
-    setState(() => _stickers = list.length);
+    setState(() {
+      _age = ageGroupFromId(id);
+      _stickers = stickers.length;
+      _loading = false;
+    });
   }
 
-  Future<void> _playThreeJars() async {
+  Future<void> _pickAge(AgeGroup g) async {
+    await StorageService.setAgeGroupId(g.id);
+    if (!mounted) return;
+    setState(() => _age = g);
+  }
+
+  void _changeAge() => setState(() => _age = null);
+
+  Future<void> _open(Widget screen) async {
     await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const ThreeJarsGame()),
+      MaterialPageRoute(builder: (_) => screen),
     );
-    _loadStickers();
+    _load();
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget body;
+    if (_loading) {
+      body = const SizedBox.shrink();
+    } else if (_age == null) {
+      body = _AgePicker(onPicked: _pickAge);
+    } else {
+      body = _World(
+        age: _age!,
+        stickers: _stickers,
+        onChangeAge: _changeAge,
+        onPlayJars: () => _open(ThreeJarsGame(age: _age!)),
+        onStoryTime: () => _open(StoryTimeScreen(age: _age!)),
+      );
+    }
+
     return Scaffold(
-      body: AnimatedSky(
-        child: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(18, 10, 18, 28),
-            children: [
-              // Sticker badge.
-              Align(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: KidsColors.sun, width: 3),
-                  ),
-                  child: Text(
-                    '⭐ $_stickers',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      color: KidsColors.ink,
+      body: AnimatedSky(child: SafeArea(child: body)),
+    );
+  }
+}
+
+/// "How old are you?" — three big friendly buttons.
+class _AgePicker extends StatelessWidget {
+  final ValueChanged<AgeGroup> onPicked;
+  const _AgePicker({required this.onPicked});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+      children: [
+        const Center(child: Bob(child: Text('🧒', style: TextStyle(fontSize: 84)))),
+        const SizedBox(height: 10),
+        const Center(
+          child: SpeechBubble(text: 'How old are you? 🎂'),
+        ),
+        const SizedBox(height: 24),
+        for (final g in AgeGroup.values) ...[
+          _AgeButton(group: g, onTap: () => onPicked(g)),
+          const SizedBox(height: 14),
+        ],
+      ],
+    );
+  }
+}
+
+class _AgeButton extends StatelessWidget {
+  final AgeGroup group;
+  final VoidCallback onTap;
+  const _AgeButton({required this.group, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Bob(
+      distance: 4,
+      child: Material(
+        color: group.color,
+        borderRadius: BorderRadius.circular(26),
+        elevation: 4,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(26),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+            child: Row(
+              children: [
+                Text(group.emoji, style: const TextStyle(fontSize: 40)),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      group.range,
+                      style: const TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
+                    Text(
+                      'years old',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 6),
-
-              // Kid explorer + greeting.
-              const Center(child: Bob(child: Text('🧒', style: TextStyle(fontSize: 84)))),
-              const SizedBox(height: 8),
-              const Center(
-                child: SpeechBubble(text: "Hi! Let's explore Coin Town! 🎒"),
-              ),
-              const SizedBox(height: 22),
-
-              // Places to visit.
-              _PlaceCard(
-                emoji: '💰',
-                title: 'Treasure Room',
-                subtitle: 'Play: The Three Jars',
-                color: KidsColors.spend,
-                ready: true,
-                onTap: _playThreeJars,
-              ),
-              const SizedBox(height: 14),
-              _PlaceCard(
-                emoji: '🍞',
-                title: 'The Bakery',
-                subtitle: 'Coming soon!',
-                color: KidsColors.give,
-                ready: false,
-              ),
-              const SizedBox(height: 14),
-              _PlaceCard(
-                emoji: '🪔',
-                title: 'Lamp Market',
-                subtitle: 'Coming soon!',
-                color: KidsColors.save,
-                ready: false,
-              ),
-            ],
+                const Spacer(),
+                const Text('▶', style: TextStyle(fontSize: 28, color: Colors.white)),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+/// The map of places once an age has been chosen.
+class _World extends StatelessWidget {
+  final AgeGroup age;
+  final int stickers;
+  final VoidCallback onChangeAge;
+  final VoidCallback onPlayJars;
+  final VoidCallback onStoryTime;
+
+  const _World({
+    required this.age,
+    required this.stickers,
+    required this.onChangeAge,
+    required this.onPlayJars,
+    required this.onStoryTime,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(18, 10, 18, 28),
+      children: [
+        // Age chip (tap to change) + sticker badge.
+        Row(
+          children: [
+            _Chip(
+              text: '${age.emoji} ${age.range}',
+              onTap: onChangeAge,
+              trailingIcon: Icons.edit,
+            ),
+            const Spacer(),
+            _Chip(text: '⭐ $stickers'),
+          ],
+        ),
+        const SizedBox(height: 6),
+
+        Center(child: Bob(child: const Text('🧒', style: TextStyle(fontSize: 84)))),
+        const SizedBox(height: 8),
+        Center(
+          child: SpeechBubble(text: "Hi, ${age.title}! Let's explore Coin Town! 🎒"),
+        ),
+        const SizedBox(height: 22),
+
+        _PlaceCard(
+          emoji: '💰',
+          title: 'Treasure Room',
+          subtitle: 'Play: The Three Jars',
+          color: KidsColors.spend,
+          ready: true,
+          onTap: onPlayJars,
+        ),
+        const SizedBox(height: 14),
+        _PlaceCard(
+          emoji: '🎬',
+          title: 'Story Time',
+          subtitle: 'Watch: Coins for Sam',
+          color: KidsColors.give,
+          ready: true,
+          onTap: onStoryTime,
+        ),
+        const SizedBox(height: 14),
+        _PlaceCard(
+          emoji: '🍞',
+          title: 'The Bakery',
+          subtitle: 'Coming soon!',
+          color: KidsColors.save,
+          ready: false,
+        ),
+        const SizedBox(height: 14),
+        _PlaceCard(
+          emoji: '🪔',
+          title: 'Lamp Market',
+          subtitle: 'Coming soon!',
+          color: const Color(0xFFB06BFF),
+          ready: false,
+        ),
+      ],
+    );
+  }
+}
+
+class _Chip extends StatelessWidget {
+  final String text;
+  final VoidCallback? onTap;
+  final IconData? trailingIcon;
+  const _Chip({required this.text, this.onTap, this.trailingIcon});
+
+  @override
+  Widget build(BuildContext context) {
+    final content = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: KidsColors.sun, width: 3),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            text,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: KidsColors.ink,
+            ),
+          ),
+          if (trailingIcon != null) ...[
+            const SizedBox(width: 4),
+            Icon(trailingIcon!, size: 15, color: KidsColors.ink),
+          ],
+        ],
+      ),
+    );
+    if (onTap == null) return content;
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: onTap,
+      child: content,
     );
   }
 }
@@ -155,7 +325,7 @@ class _PlaceCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
                     color: KidsColors.ink,
@@ -181,7 +351,7 @@ class _PlaceCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(18),
               ),
               child: const Text(
-                'PLAY ▶',
+                'GO ▶',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
@@ -200,7 +370,6 @@ class _PlaceCard extends StatelessWidget {
 
     if (!ready) return Opacity(opacity: 0.9, child: card);
 
-    // Playable cards gently bob and respond to a tap.
     return Bob(
       distance: 4,
       child: Material(

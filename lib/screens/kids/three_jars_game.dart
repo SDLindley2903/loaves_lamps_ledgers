@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../services/storage_service.dart';
+import 'age_group.dart';
 import 'kids_art.dart';
 
 /// The Three Jars — a cartoon coin-sorting game for ages 5–10.
@@ -9,7 +10,8 @@ import 'kids_art.dart';
 /// Spend. There is no "wrong" answer — every choice is celebrated. When all
 /// the coins are sorted, confetti falls and the child earns a sticker.
 class ThreeJarsGame extends StatefulWidget {
-  const ThreeJarsGame({super.key});
+  final AgeGroup age;
+  const ThreeJarsGame({super.key, this.age = AgeGroup.explorer});
 
   @override
   State<ThreeJarsGame> createState() => _ThreeJarsGameState();
@@ -30,7 +32,7 @@ const _jarSpecs = <_JarSpec>[
 ];
 
 class _ThreeJarsGameState extends State<ThreeJarsGame> {
-  static const int _total = 6;
+  int get _total => widget.age.coinCount;
 
   late List<int> _remaining;
   final Map<String, int> _counts = {'Give': 0, 'Save': 0, 'Spend': 0};
@@ -128,24 +130,22 @@ class _ThreeJarsGameState extends State<ThreeJarsGame> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  SizedBox(
-                    height: 76,
-                    child: Center(
-                      child: Wrap(
-                        spacing: 12,
-                        runSpacing: 8,
-                        alignment: WrapAlignment.center,
-                        children: [
-                          for (final id in _remaining)
-                            PopIn(
-                              key: ValueKey(id),
-                              child: Bob(
-                                distance: 5,
-                                child: _DraggableCoin(id: id),
-                              ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Wrap(
+                      spacing: 12,
+                      runSpacing: 10,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        for (final id in _remaining)
+                          PopIn(
+                            key: ValueKey(id),
+                            child: Bob(
+                              distance: 5,
+                              child: _DraggableCoin(id: id),
                             ),
-                        ],
-                      ),
+                          ),
+                      ],
                     ),
                   ),
 
