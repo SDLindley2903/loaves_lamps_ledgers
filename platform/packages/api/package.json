@@ -1,0 +1,16 @@
+{
+  "name": "@ft/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "API kernel: the shared request pipeline (authn -> tenancy -> authz -> audit -> handler)",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@ft/audit": "workspace:*",
+    "@ft/authorization": "workspace:*",
+    "@ft/core": "workspace:*",
+    "@ft/identity": "workspace:*",
+    "@ft/tenancy": "workspace:*"
+  }
+}

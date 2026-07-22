@@ -17,9 +17,13 @@ built as a modular set of packages with hard boundaries (doc 01).
 | `@ft/authorization` | RBAC + ABAC `can()` engine, deny-by-default, role inheritance | 03 |
 | `@ft/tenancy` | Tenant context, tenant-scoped data access, cross-tenant guard, RLS policy | 04 |
 | `@ft/audit` | Append-only, hash-chained, tamper-evident audit log + verification | 06 |
+| `@ft/identity` | Password hashing/policy, MFA (TOTP + recovery codes), access tokens, sessions | 02 |
+| `@ft/api` | The shared request kernel: authn → tenancy → authz → audit → handler, RFC 9457 errors, idempotency | 08, 01 |
 
-Dependency direction is one-way: `authorization`, `tenancy`, `audit` → `core`. Never sideways. This
-mirrors the ports/boundaries rule in doc 16 and keeps each module independently extractable (doc 01).
+Dependency direction is one-way toward `core`. `identity` builds on `core`; `api` is the composition
+layer that wires `identity`, `authorization`, `tenancy`, and `audit` into one request pipeline. No
+sideways product-to-product dependencies. This mirrors the ports/boundaries rule in doc 16 and keeps
+each module independently extractable (doc 01).
 
 ## Commands
 
@@ -42,7 +46,7 @@ pnpm format         # prettier
 
 ## Not yet built (next increments)
 
-The data-layer RLS control is included as a migration (`packages/tenancy/sql/rls.sql`) with an
-integration test that runs against a real Postgres when one is available; the HTTP/API framework
-(doc 08), identity service (doc 02), and product modules come in later increments. See the root reply
-/ project notes for sequencing.
+The data-layer RLS control is included as a migration (`packages/tenancy/sql/rls.sql`); a Postgres
+integration test that runs it against a real database, the transport adapter that mounts the kernel on
+NestJS/Fastify, the identity HTTP endpoints (login/MFA/refresh) on top of `@ft/identity`, and the first
+product module (a Genesis membership vertical) come in later increments.

@@ -27,6 +27,24 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.1)
 
+  packages/api:
+    dependencies:
+      '@ft/audit':
+        specifier: workspace:*
+        version: link:../audit
+      '@ft/authorization':
+        specifier: workspace:*
+        version: link:../authorization
+      '@ft/core':
+        specifier: workspace:*
+        version: link:../core
+      '@ft/identity':
+        specifier: workspace:*
+        version: link:../identity
+      '@ft/tenancy':
+        specifier: workspace:*
+        version: link:../tenancy
+
   packages/audit:
     dependencies:
       '@ft/core':
