@@ -113,12 +113,24 @@ importers:
       '@ft/tenancy':
         specifier: workspace:*
         version: link:../tenancy
+      '@ft/users':
+        specifier: workspace:*
+        version: link:../users
 
   packages/tenancy:
     dependencies:
       '@ft/core':
         specifier: workspace:*
         version: link:../core
+
+  packages/users:
+    dependencies:
+      '@ft/core':
+        specifier: workspace:*
+        version: link:../core
+      '@ft/identity':
+        specifier: workspace:*
+        version: link:../identity
 
   products/genesis:
     dependencies:

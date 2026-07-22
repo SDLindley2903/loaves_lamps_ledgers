@@ -53,6 +53,12 @@ export type PublicHandler = (ctx: PublicContext) => Promise<ApiResponse> | ApiRe
  */
 export type RouteAuthorization =
   | { readonly kind: "public"; readonly reason: string }
+  /**
+   * Requires a valid, non-revoked session but no specific permission — for self-service account
+   * routes (manage your own MFA, refresh, logout) that any authenticated user may call for themselves
+   * (doc 02/05). Tenant scoping and audit still apply; only the permission check is skipped.
+   */
+  | { readonly kind: "authenticated" }
   | {
       readonly kind: "permission";
       readonly permission: string;
@@ -76,7 +82,7 @@ export interface PublicRoute {
 export interface ProtectedRoute {
   readonly method: HttpMethod;
   readonly path: string;
-  readonly authorization: Extract<RouteAuthorization, { kind: "permission" }>;
+  readonly authorization: Exclude<RouteAuthorization, { kind: "public" }>;
   /** When present, the kernel records an audit event for this route (doc 06). */
   readonly audit?: AuditSpec;
   readonly handler: ProtectedHandler;

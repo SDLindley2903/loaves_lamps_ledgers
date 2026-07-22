@@ -20,7 +20,8 @@ built as a modular set of packages with hard boundaries (doc 01).
 | `@ft/identity` | Password hashing/policy, MFA (TOTP + recovery codes), access tokens, sessions | 02 |
 | `@ft/api` | The shared request kernel: authn → tenancy → authz → audit → handler, RFC 9457 errors, idempotency | 08, 01 |
 | `@ft/db` | PostgreSQL access bound to tenant scope (enforces RLS) + migration runner | 04, 07 |
-| `@ft/server` | HTTP transport adapter that mounts the kernel on a real web server; security headers; composition root | 01, 08, 11 |
+| `@ft/users` | User accounts, memberships, credential + MFA lifecycle (register, verify, enroll) | 02, 05 |
+| `@ft/server` | HTTP transport adapter + auth endpoints (register/login/MFA/refresh/logout); security headers; composition root | 01, 02, 08, 11 |
 
 Products (`products/*`) are thin applications on top of the platform:
 
@@ -58,18 +59,26 @@ pnpm format         # prettier
 
 ## Running the server
 
-In-memory mode (no database), with the DEV-only token endpoint enabled:
+In-memory mode (no database), using the real auth flow (register → login):
 
 ```bash
-pnpm serve:dev            # listens on :8080; FT_DEV_AUTH=1
-# then:
+pnpm serve                 # listens on :8080
 curl -s localhost:8080/health
-TOKEN=$(curl -s -X POST localhost:8080/dev/login -H 'content-type: application/json' \
-  -d '{"roles":["Genesis.Editor"]}' | sed -n 's/.*"accessToken":"\([^"]*\)".*/\1/p')
+curl -s -X POST localhost:8080/auth/register -H 'content-type: application/json' \
+  -d '{"email":"pastor@firstchurch.org","password":"a decent passphrase","organizationName":"First Church"}'
+TOKEN=$(curl -s -X POST localhost:8080/auth/login -H 'content-type: application/json' \
+  -d '{"email":"pastor@firstchurch.org","password":"a decent passphrase"}' \
+  | sed -n 's/.*"accessToken":"\([^"]*\)".*/\1/p')
 curl -s -X POST localhost:8080/genesis/members -H "authorization: Bearer $TOKEN" \
   -H 'content-type: application/json' -d '{"name":"Ada","email":"ada@example.org"}'
 curl -s localhost:8080/genesis/members -H "authorization: Bearer $TOKEN"
 ```
+
+Auth endpoints: `POST /auth/register`, `/auth/login`, `/auth/mfa/verify`, `/auth/refresh`,
+`/auth/logout`, `/auth/mfa/enroll`, `/auth/mfa/enroll/confirm`. A login for an MFA-enrolled account
+returns `{ mfaRequired: true, challengeId }`; complete it at `/auth/mfa/verify` with a TOTP or recovery
+code. (`pnpm serve:dev` additionally enables the legacy `/dev/login` shortcut; not needed now that real
+auth exists.)
 
 Postgres mode (RLS-enforced). `DATABASE_URL` must connect as a **non-bypass** role (`ft_app`); the
 admin URL runs migrations and provisions tenants:
@@ -97,7 +106,7 @@ CI provides a Postgres service and sets this automatically, so the RLS invariant
 
 ## Not yet built (next increments)
 
-The real identity HTTP endpoints (login / MFA / refresh) that replace the DEV token endpoint, tenant
-provisioning and the user/membership model (doc 05), a Postgres-backed session store, and the Flutter
-client wiring come in later increments. The current server uses an in-memory session store and (in
-DB mode) a single admin connection for provisioning.
+Postgres-backed user, membership, and session stores (users/sessions are currently in-memory, so they
+reset on restart; product data already persists in Postgres), the invitation flow for adding users to
+an existing organization (registration currently creates a new org), and the Flutter client wiring come
+in later increments.

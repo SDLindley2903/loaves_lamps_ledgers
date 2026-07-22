@@ -1,0 +1,13 @@
+{
+  "name": "@ft/users",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "User accounts, memberships, and account/credential/MFA lifecycle (doc 05)",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@ft/core": "workspace:*",
+    "@ft/identity": "workspace:*"
+  }
+}

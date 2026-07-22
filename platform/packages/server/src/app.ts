@@ -4,7 +4,14 @@ import { InMemoryAuditLog, type AuditLog } from "@ft/audit";
 import { AuthorizationService, buildCatalog, resolvePermissions } from "@ft/authorization";
 import { ok, PlatformKernel, Router, type Route } from "@ft/api";
 import { Database, loadMigrationFile, runMigrations } from "@ft/db";
-import { InMemorySessionStore, TokenService, type SessionStore } from "@ft/identity";
+import {
+  InMemorySessionStore,
+  PasswordPolicy,
+  ScryptPasswordHasher,
+  TokenService,
+  type SessionStore,
+} from "@ft/identity";
+import { InMemoryUsersRepository, UserService } from "@ft/users";
 import {
   GENESIS_ROLES,
   InMemoryMembersRepository,
@@ -12,6 +19,7 @@ import {
   genesisRoutes,
   type MembersRepository,
 } from "@ft/genesis";
+import { authRoutes } from "./auth-routes.js";
 import { devAuthRoute } from "./dev-auth.js";
 
 /**
@@ -71,7 +79,7 @@ export async function buildApp(config: AppConfig): Promise<App> {
   let appDb: Database | undefined;
   let adminDb: Database | undefined;
   let members: MembersRepository;
-  let ensureTenant: ((tenantId: string) => Promise<void>) | undefined;
+  let ensureTenant: ((tenantId: string, name?: string) => Promise<void>) | undefined;
 
   if (config.databaseUrl) {
     appDb = Database.fromUrl(config.databaseUrl);
@@ -83,11 +91,11 @@ export async function buildApp(config: AppConfig): Promise<App> {
       if (config.migrate) {
         await runStartupMigrations(admin);
       }
-      ensureTenant = async (tenantId: string) => {
+      ensureTenant = async (tenantId: string, name?: string) => {
         await admin.withConnection((exec) =>
           exec.query("INSERT INTO tenants (id, name) VALUES ($1, $2) ON CONFLICT DO NOTHING", [
             tenantId,
-            "Dev Tenant",
+            name ?? "Organization",
           ]),
         );
       };
@@ -98,6 +106,16 @@ export async function buildApp(config: AppConfig): Promise<App> {
     members = new InMemoryMembersRepository();
   }
 
+  // Account service: user accounts, memberships, credentials, and MFA (doc 02/05). Users are a
+  // platform (cross-tenant) concern, so this uses an in-memory store for now (Postgres-backed users
+  // are a later increment); product data remains RLS-scoped in Postgres.
+  const userService = new UserService(
+    new InMemoryUsersRepository(),
+    new ScryptPasswordHasher(),
+    new PasswordPolicy(),
+    config.issuer,
+  );
+
   const routes: Route[] = [
     {
       method: "GET",
@@ -105,6 +123,13 @@ export async function buildApp(config: AppConfig): Promise<App> {
       authorization: { kind: "public", reason: "liveness/readiness probe" },
       handler: () => ok({ status: "ok", time: new Date().toISOString() }),
     },
+    ...authRoutes({
+      userService,
+      tokens,
+      sessions,
+      audit,
+      ...(ensureTenant ? { ensureTenant } : {}),
+    }),
     ...genesisRoutes(members),
   ];
   if (config.devAuth) {

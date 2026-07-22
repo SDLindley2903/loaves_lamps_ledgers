@@ -14,6 +14,7 @@
     "@ft/db": "workspace:*",
     "@ft/genesis": "workspace:*",
     "@ft/identity": "workspace:*",
-    "@ft/tenancy": "workspace:*"
+    "@ft/tenancy": "workspace:*",
+    "@ft/users": "workspace:*"
   }
 }

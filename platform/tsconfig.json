@@ -11,6 +11,7 @@
       "@ft/api": ["packages/api/src/index.ts"],
       "@ft/db": ["packages/db/src/index.ts"],
       "@ft/genesis": ["products/genesis/src/index.ts"],
+      "@ft/users": ["packages/users/src/index.ts"],
       "@ft/server": ["packages/server/src/index.ts"]
     }
   },

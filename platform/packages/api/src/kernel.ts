@@ -118,13 +118,17 @@ export class PlatformKernel {
       }
     }
 
-    // 8. Authorization: deny-by-default permission (+ optional ABAC/step-up).
-    const resource: Resource | undefined = route.authorization.resource?.(ctx);
-    try {
-      this.deps.authorization.assert(security, route.authorization.permission, resource);
-    } catch (denial) {
-      await this.recordAudit(route.audit, security, request, "denied", resource, denial);
-      throw denial;
+    // 8. Authorization: deny-by-default permission (+ optional ABAC/step-up). An "authenticated"
+    // route requires only a valid session (self-service account routes), so it skips this check.
+    let resource: Resource | undefined;
+    if (route.authorization.kind === "permission") {
+      resource = route.authorization.resource?.(ctx);
+      try {
+        this.deps.authorization.assert(security, route.authorization.permission, resource);
+      } catch (denial) {
+        await this.recordAudit(route.audit, security, request, "denied", resource, denial);
+        throw denial;
+      }
     }
 
     // 9. Run the handler inside the tenant scope so DB (RLS) and app-layer scoping apply (doc 04).
