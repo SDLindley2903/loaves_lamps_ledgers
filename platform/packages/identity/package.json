@@ -1,0 +1,13 @@
+{
+  "name": "@ft/identity",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Authentication: password hashing/policy, MFA (TOTP + recovery codes), tokens, sessions",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@ft/core": "workspace:*",
+    "jose": "^5.9.6"
+  }
+}
